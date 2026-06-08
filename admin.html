@@ -9,7 +9,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --blue: #1A3A6B; --blue-light: #2E5FAA;
-      --gold: #B8860B; --red: #C0392B;
+      --gold: #B8860B; --red: #C0392B; --red-light: #FADBD8;
       --cream: #FAF8F2; --white: #fff;
       --text: #1a1a2e; --muted: #64748b;
       --border: #e2e8f0; --radius: 12px;
@@ -85,6 +85,17 @@
     }
     .btn-sm:hover { background:var(--cream); }
 
+    /* DELETE BUTTON */
+    .btn-delete {
+      padding:6px 13px; border:1.5px solid #e8b4b0;
+      background:#fff5f5; border-radius:7px;
+      font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600;
+      cursor:pointer; color:var(--red); transition:all 0.2s;
+      display:inline-flex; align-items:center; gap:5px;
+    }
+    .btn-delete:hover { background:var(--red); color:#fff; border-color:var(--red); }
+    .btn-delete:disabled { opacity:0.5; cursor:not-allowed; }
+
     /* TABS */
     .tabs {
       display:flex; background:var(--white);
@@ -120,12 +131,18 @@
       background:var(--white); border:1px solid var(--border);
       border-radius:var(--radius); padding:1.25rem;
       box-shadow:0 2px 10px rgba(0,0,0,0.04);
+      transition:opacity 0.3s, transform 0.3s;
+    }
+    .data-card.deleting {
+      opacity:0; transform:scale(0.97);
+      pointer-events:none;
     }
     .dc-header {
       display:flex; align-items:flex-start; justify-content:space-between;
       gap:10px; margin-bottom:12px; padding-bottom:10px;
       border-bottom:1px solid var(--border);
     }
+    .dc-header-left { display:flex; flex-direction:column; gap:4px; }
     .dc-title { font-weight:700; font-size:15px; color:var(--blue); }
     .dc-time  { font-size:11px; color:var(--muted); white-space:nowrap; }
 
@@ -159,6 +176,37 @@
     .back-link a { color:var(--blue); font-weight:600; text-decoration:none; }
     .back-link a:hover { text-decoration:underline; }
 
+    /* CONFIRM MODAL */
+    .modal-overlay {
+      display:none; position:fixed; inset:0;
+      background:rgba(0,0,0,0.45); z-index:999;
+      align-items:center; justify-content:center;
+    }
+    .modal-overlay.open { display:flex; }
+    .modal {
+      background:var(--white); border-radius:var(--radius);
+      padding:2rem; max-width:380px; width:90%;
+      box-shadow:0 20px 60px rgba(0,0,0,0.2);
+      animation:modalIn 0.2s ease;
+    }
+    @keyframes modalIn { from{opacity:0;transform:scale(0.95)} to{opacity:1;transform:scale(1)} }
+    .modal h3 { font-family:'Playfair Display',serif; color:var(--red); margin-bottom:8px; font-size:1.15rem; }
+    .modal p { color:var(--muted); font-size:13px; line-height:1.6; margin-bottom:1.5rem; }
+    .modal-actions { display:flex; gap:10px; justify-content:flex-end; }
+    .btn-cancel {
+      padding:9px 18px; border:1.5px solid var(--border);
+      background:var(--white); border-radius:8px;
+      font-family:'DM Sans',sans-serif; font-size:13px;
+      cursor:pointer; color:var(--text);
+    }
+    .btn-confirm-del {
+      padding:9px 18px; border:none;
+      background:var(--red); border-radius:8px;
+      font-family:'DM Sans',sans-serif; font-size:13px; font-weight:600;
+      cursor:pointer; color:#fff; transition:background 0.2s;
+    }
+    .btn-confirm-del:hover { background:#a93226; }
+
     @media(max-width:600px) {
       .dc-grid { grid-template-columns:1fr; }
       .tabs { flex-direction:column; }
@@ -173,7 +221,7 @@
     <h1>Koperasi Warga Institut Koperasi Malaysia</h1>
   </div>
   <div class="hdr-badge">Pentadbir</div>
-  <h2>Panel Keputusan — Notis MAT</h2>
+  <h2>Panel Keputusan — Pencalonan ALK</h2>
 </header>
 
 <!-- ── AUTH ─────────────────────────────────────── -->
@@ -243,9 +291,21 @@
   </div>
 </div>
 
+<!-- ── CONFIRM DELETE MODAL ──────────────────────── -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <h3>⚠️ Padam Rekod?</h3>
+    <p id="modal-msg">Tindakan ini tidak boleh dibatalkan. Rekod akan dipadam secara kekal dari Firestore.</p>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Batal</button>
+      <button class="btn-confirm-del" id="btn-confirm-del" onclick="confirmDelete()">Ya, Padam</button>
+    </div>
+  </div>
+</div>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, collection, getDocs, orderBy, query }
+  import { getFirestore, collection, getDocs, orderBy, query, doc, deleteDoc }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   // ── CONFIG ─────────────────────────────────────────
@@ -262,6 +322,9 @@
 
   let db;
   let allData = { pencalonan: [], aduan: [], usul: [] };
+
+  // Pending delete state
+  let pendingDelete = { collection: null, id: null, cardEl: null };
 
   try {
     const app = initializeApp(firebaseConfig);
@@ -325,10 +388,15 @@
 
   function renderPencalonan(d, i) {
     return `
-      <div class="data-card">
+      <div class="data-card" id="card-${d.id}">
         <div class="dc-header">
-          <div class="dc-title">#${i+1} — ${v(d.calon?.nama)}</div>
-          <div class="dc-time">${fmt(d.dihantar)}</div>
+          <div class="dc-header-left">
+            <div class="dc-title">#${i+1} — ${v(d.calon?.nama)}</div>
+            <div class="dc-time">${fmt(d.dihantar)}</div>
+          </div>
+          <button class="btn-delete" onclick="askDelete('pencalonan','${d.id}','${escQ(d.calon?.nama)}')">
+            🗑 Padam
+          </button>
         </div>
         <div class="dc-grid">
           <div class="dc-group">
@@ -353,10 +421,15 @@
   function renderAduanUsul(d, i, type) {
     const label = type === "aduan" ? "Aduan" : "Usul";
     return `
-      <div class="data-card">
+      <div class="data-card" id="card-${d.id}">
         <div class="dc-header">
-          <div class="dc-title">#${i+1} — ${v(d.nama)}</div>
-          <div class="dc-time">${fmt(d.dihantar)}</div>
+          <div class="dc-header-left">
+            <div class="dc-title">#${i+1} — ${v(d.nama)}</div>
+            <div class="dc-time">${fmt(d.dihantar)}</div>
+          </div>
+          <button class="btn-delete" onclick="askDelete('${type}','${d.id}','${escQ(d.nama)}')">
+            🗑 Padam
+          </button>
         </div>
         <div class="dc-meta">
           <div class="dc-meta-item"><span>Nama:</span>${v(d.nama)}</div>
@@ -366,6 +439,53 @@
         <div class="kandungan-box">${v(d.kandungan)}</div>
       </div>`;
   }
+
+  // Escape single quotes for inline onclick attr
+  function escQ(s) { return (s || "").replace(/'/g, "\\'"); }
+
+  // ── DELETE ───────────────────────────────────────────
+  window.askDelete = function(colName, docId, label) {
+    pendingDelete = { collection: colName, id: docId, cardEl: document.getElementById("card-" + docId) };
+    document.getElementById("modal-msg").textContent =
+      `Anda akan memadam rekod "${label || docId}" dari koleksi "${colName}". Tindakan ini tidak boleh dibatalkan.`;
+    document.getElementById("modal-overlay").classList.add("open");
+  };
+
+  window.closeModal = function() {
+    document.getElementById("modal-overlay").classList.remove("open");
+    pendingDelete = { collection: null, id: null, cardEl: null };
+  };
+
+  window.confirmDelete = async function() {
+    const { collection: col, id, cardEl } = pendingDelete;
+    if (!col || !id) return;
+
+    const btn = document.getElementById("btn-confirm-del");
+    btn.textContent = "Memadam…";
+    btn.disabled = true;
+
+    try {
+      await deleteDoc(doc(db, col, id));
+
+      // Animate card out
+      if (cardEl) {
+        cardEl.classList.add("deleting");
+        setTimeout(() => cardEl.remove(), 300);
+      }
+
+      // Update local data & count
+      allData[col] = allData[col].filter(d => d.id !== id);
+      document.getElementById("cnt-" + col).textContent = allData[col].length;
+
+      closeModal();
+    } catch(e) {
+      alert("Gagal memadam rekod. Semak konsol.");
+      console.error(e);
+    } finally {
+      btn.textContent = "Ya, Padam";
+      btn.disabled = false;
+    }
+  };
 
   // ── TABS ─────────────────────────────────────────────
   window.switchTab = function(tab) {
@@ -403,7 +523,7 @@
         ].map(f => `"${f}"`).join(",") + "\n";
       });
     }
-    const blob = new Blob(["\uFEFF" + csv, { type:"text/csv;charset=utf-8;" }]);
+    const blob = new Blob(["\uFEFF" + csv], { type:"text/csv;charset=utf-8;" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = `koikma-${name}-${new Date().toISOString().slice(0,10)}.csv`;

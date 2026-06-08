@@ -4,238 +4,399 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Notis Mesyuarat Agung — KOIKMA</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --red: #C0392B; --blue: #1A3A6B; --blue-light: #2E5FAA;
-      --cream: #FAF8F2; --white: #fff; --text: #1a1a2e; --muted: #5a5a7a;
-      --border: #e2e8f0; --gold: #B8860B; --radius: 12px;
+      --red: #C0392B; --red-light: #e74c3c;
+      --blue: #1A3A6B; --blue-light: #2E5FAA; --blue-glow: rgba(26,58,107,0.15);
+      --gold: #B8860B; --gold-light: #f0c040;
+      --cream: #F7F5F0; --white: #fff;
+      --text: #0f172a; --muted: #64748b;
+      --border: #e2e8f0; --radius: 14px;
+      --shadow: 0 4px 24px rgba(15,23,42,0.08);
+      --shadow-hover: 0 8px 40px rgba(15,23,42,0.14);
     }
-    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
+    html { scroll-behavior: smooth; }
+    body { font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--text); min-height:100vh; overflow-x:hidden; }
 
-    /* ── HEADER ── */
+    /* ═══════════════════════════════ ANIMATIONS ═══════════════════════════════ */
+    @keyframes fadeUp   { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fadeIn   { from { opacity:0; } to { opacity:1; } }
+    @keyframes slideRight { from { opacity:0; transform:translateX(-20px); } to { opacity:1; transform:translateX(0); } }
+    @keyframes pulse    { 0%,100%{transform:scale(1);} 50%{transform:scale(1.04);} }
+    @keyframes shimmer  { 0%{background-position:-400px 0;} 100%{background-position:400px 0;} }
+    @keyframes floatBg  { 0%,100%{transform:translateY(0) rotate(0deg);} 50%{transform:translateY(-18px) rotate(3deg);} }
+    @keyframes spin     { to{transform:rotate(360deg);} }
+    @keyframes badgePop { 0%{transform:scale(0.7);opacity:0;} 80%{transform:scale(1.08);} 100%{transform:scale(1);opacity:1;} }
+    @keyframes gradMove { 0%{background-position:0% 50%;} 50%{background-position:100% 50%;} 100%{background-position:0% 50%;} }
+
+    .anim-fade-up  { animation: fadeUp   0.6s ease both; }
+    .anim-fade-in  { animation: fadeIn   0.5s ease both; }
+    .anim-slide-r  { animation: slideRight 0.5s ease both; }
+
+    /* ═══════════════════════════════ HEADER ═══════════════════════════════ */
     header {
-      background: var(--blue);
-      padding: 1.5rem 2rem 1rem;
+      background: linear-gradient(135deg, #0D1F3C 0%, #1A3A6B 50%, #1e4d8c 100%);
+      background-size: 200% 200%;
+      animation: gradMove 8s ease infinite;
+      padding: 2.5rem 2rem 2rem;
       text-align: center;
+      position: relative;
+      overflow: hidden;
     }
-    .header-inner { max-width: 860px; margin: 0 auto; }
-    .logo-wrap { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1rem; }
-    .logo-wrap img { width: 72px; height: 72px; object-fit: contain; }
-    .org-name { text-align: left; }
-    .org-name h1 { font-family: 'Playfair Display', serif; color: #fff; font-size: clamp(1rem, 3vw, 1.4rem); line-height: 1.3; }
-    .org-name p  { color: rgba(255,255,255,0.6); font-size: 12px; margin-top: 2px; }
+    header::before {
+      content:'';
+      position:absolute; inset:0;
+      background:
+        radial-gradient(circle at 20% 50%, rgba(184,134,11,0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(46,95,170,0.15) 0%, transparent 40%);
+      pointer-events:none;
+    }
+    /* floating shapes */
+    header::after {
+      content:'';
+      position:absolute; width:300px; height:300px;
+      border-radius:50%; top:-80px; right:-80px;
+      background:rgba(255,255,255,0.03);
+      animation: floatBg 9s ease-in-out infinite;
+      pointer-events:none;
+    }
+    .header-inner { max-width:860px; margin:0 auto; position:relative; }
+    .logo-wrap {
+      display:flex; align-items:center; justify-content:center; gap:1rem; margin-bottom:1.25rem;
+      animation: fadeUp 0.7s ease both;
+    }
+    .logo-wrap img {
+      width:80px; height:80px; object-fit:contain;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+      transition: transform 0.3s;
+    }
+    .logo-wrap img:hover { transform:scale(1.05) rotate(-2deg); }
+    .org-name { text-align:left; }
+    .org-name h1 {
+      font-family:'Playfair Display',serif; color:#fff;
+      font-size:clamp(1rem,3vw,1.5rem); line-height:1.3;
+      text-shadow:0 2px 8px rgba(0,0,0,0.3);
+    }
+    .org-name p { color:rgba(255,255,255,0.55); font-size:12px; margin-top:3px; }
     .doc-title {
-      display: inline-block;
-      background: rgba(192,57,43,0.15);
-      border: 1px solid rgba(192,57,43,0.5);
-      color: #ffb3ad;
-      font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
-      padding: 5px 18px; border-radius: 100px; margin-bottom: 8px;
+      display:inline-block;
+      background:rgba(192,57,43,0.2); border:1px solid rgba(192,57,43,0.6);
+      color:#ffb3ad; font-size:11px; letter-spacing:0.12em; text-transform:uppercase;
+      padding:5px 20px; border-radius:100px; margin-bottom:12px;
+      animation: badgePop 0.7s 0.3s ease both;
     }
-    header h2 { font-family: 'Playfair Display', serif; color: #fff; font-size: clamp(1.2rem, 3.5vw, 1.7rem); }
-    header p.sub { color: rgba(255,255,255,0.55); font-size: 13px; margin-top: 5px; }
+    header h2 {
+      font-family:'Playfair Display',serif; color:#fff;
+      font-size:clamp(1.4rem,4vw,2rem); line-height:1.25;
+      text-shadow:0 2px 12px rgba(0,0,0,0.25);
+      animation: fadeUp 0.7s 0.2s ease both;
+    }
+    header p.sub {
+      color:rgba(255,255,255,0.55); font-size:13px; margin-top:8px;
+      animation: fadeUp 0.7s 0.35s ease both;
+    }
+    /* gold divider */
+    .header-divider {
+      width:60px; height:3px; margin:1.2rem auto 0;
+      background:linear-gradient(90deg, transparent, var(--gold-light), transparent);
+      border-radius:2px;
+      animation: fadeIn 1s 0.5s ease both;
+    }
 
-    /* ── NAV DOTS ── */
+    /* ═══════════════════════════════ NAV ═══════════════════════════════ */
     .nav-bar {
-      background: var(--white); border-bottom: 1px solid var(--border);
-      display: flex; justify-content: center; flex-wrap: wrap; gap: 0;
-      position: sticky; top: 0; z-index: 50;
+      background:rgba(255,255,255,0.96); backdrop-filter:blur(10px);
+      border-bottom:1px solid var(--border);
+      display:flex; justify-content:center; flex-wrap:wrap;
+      position:sticky; top:0; z-index:50;
+      box-shadow:0 2px 16px rgba(15,23,42,0.06);
     }
     .nav-bar a {
-      padding: 12px 18px; font-size: 13px; font-weight: 600; color: var(--muted);
-      text-decoration: none; border-bottom: 3px solid transparent;
-      transition: color 0.2s, border-color 0.2s; white-space: nowrap;
+      padding:13px 20px; font-size:13px; font-weight:600; color:var(--muted);
+      text-decoration:none; border-bottom:3px solid transparent;
+      transition:all 0.25s; white-space:nowrap; position:relative;
     }
-    .nav-bar a:hover { color: var(--blue); border-color: var(--blue); }
+    .nav-bar a::after {
+      content:''; position:absolute; bottom:0; left:50%; right:50%;
+      height:3px; background:var(--blue);
+      transition:left 0.25s, right 0.25s;
+    }
+    .nav-bar a:hover { color:var(--blue); }
+    .nav-bar a:hover::after { left:0; right:0; }
 
-    /* ── CONTAINER ── */
-    .container { max-width: 860px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+    /* ═══════════════════════════════ CONTAINER ═══════════════════════════════ */
+    .container { max-width:880px; margin:0 auto; padding:2.5rem 1rem 5rem; }
 
-    /* ── SECTION HEADING ── */
+    /* ═══════════════════════════════ SECTION HEADING ═══════════════════════════════ */
     .section-head {
-      display: flex; align-items: center; gap: 12px;
-      margin-bottom: 1.5rem; padding-bottom: 12px;
-      border-bottom: 2px solid var(--border);
+      display:flex; align-items:center; gap:14px;
+      margin-bottom:1.75rem; padding-bottom:14px;
+      border-bottom:2px solid transparent;
+      background: linear-gradient(var(--cream),var(--cream)) padding-box,
+                  linear-gradient(90deg, var(--blue), transparent) border-box;
     }
     .section-num {
-      width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: 15px; color: #fff;
+      width:40px; height:40px; border-radius:50%; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+      font-weight:800; font-size:16px; color:#fff;
+      box-shadow:0 4px 12px rgba(0,0,0,0.2);
+      transition:transform 0.3s;
     }
-    .num-red  { background: var(--red); }
-    .num-blue { background: var(--blue); }
-    .num-gold { background: var(--gold); }
-    .num-gray { background: #64748b; }
-    .section-head h3 { font-family: 'Playfair Display', serif; font-size: 1.25rem; color: var(--text); }
-    .section-head p  { font-size: 13px; color: var(--muted); margin-top: 2px; }
-    section { margin-bottom: 2.5rem; }
+    .section-num:hover { transform:rotate(10deg) scale(1.1); }
+    .num-red  { background:linear-gradient(135deg,#e74c3c,var(--red)); }
+    .num-blue { background:linear-gradient(135deg,var(--blue-light),var(--blue)); }
+    .num-gold { background:linear-gradient(135deg,var(--gold-light),var(--gold)); }
+    .num-gray { background:linear-gradient(135deg,#94a3b8,#64748b); }
+    .section-head h3 { font-family:'Playfair Display',serif; font-size:1.3rem; color:var(--text); }
+    .section-head p  { font-size:13px; color:var(--muted); margin-top:3px; }
 
-    /* ── SECTION 1: PENGGUGURAN ── */
+    section {
+      margin-bottom:3rem;
+      animation: fadeUp 0.6s ease both;
+    }
+    section:nth-child(2) { animation-delay:0.1s; }
+    section:nth-child(3) { animation-delay:0.2s; }
+    section:nth-child(4) { animation-delay:0.3s; }
+
+    /* ═══════════════════════════════ SECTION 1: PENGGUGURAN ═══════════════════════════════ */
     .gugur-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 1rem;
+      display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:1.25rem;
     }
     .gugur-card {
-      background: var(--white); border: 1px solid var(--border);
-      border-radius: var(--radius); overflow: hidden; text-align: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      background:var(--white); border:1px solid var(--border);
+      border-radius:var(--radius); overflow:hidden; text-align:center;
+      box-shadow:var(--shadow); transition:transform 0.3s, box-shadow 0.3s;
+      position:relative;
     }
+    .gugur-card::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:4px;
+      background:linear-gradient(90deg, var(--red), var(--red-light));
+    }
+    .gugur-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-hover); }
     .gugur-photo {
-      width: 100%; aspect-ratio: 1/1; object-fit: cover;
-      background: #f0f4f8; display: block;
+      width:100%; aspect-ratio:1/1; object-fit:cover; display:block;
+      transition:transform 0.4s;
     }
+    .gugur-card:hover .gugur-photo { transform:scale(1.04); }
     .gugur-photo-placeholder {
-      width: 100%; aspect-ratio: 1/1; background: linear-gradient(135deg,#e2e8f0,#cbd5e1);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 2.5rem; color: #94a3b8;
+      width:100%; aspect-ratio:1/1;
+      background:linear-gradient(135deg,#e2e8f0,#cbd5e1);
+      display:flex; align-items:center; justify-content:center;
+      font-size:3rem; color:#94a3b8;
     }
-    .gugur-info { padding: 12px; }
-    .gugur-info h4 { font-weight: 600; font-size: 13px; color: var(--text); line-height: 1.4; }
-    .gugur-info p  { font-size: 11px; color: var(--muted); margin-top: 3px; }
+    .gugur-info { padding:14px; }
+    .gugur-info h4 { font-weight:700; font-size:13px; color:var(--text); line-height:1.4; }
+    .gugur-info p  { font-size:11px; color:var(--muted); margin-top:4px; }
     .gugur-badge {
-      display: inline-block; background: #FDECEA; border: 1px solid #F5B7B1;
-      color: var(--red); font-size: 10px; font-weight: 600;
-      padding: 2px 8px; border-radius: 100px; margin-top: 6px; letter-spacing: 0.05em;
+      display:inline-block; background:#FDECEA; border:1px solid #F5B7B1;
+      color:var(--red); font-size:10px; font-weight:700;
+      padding:3px 10px; border-radius:100px; margin-top:8px; letter-spacing:0.06em;
+      animation: badgePop 0.5s ease both;
     }
 
-    /* ── SECTION 2: PENCALONAN ── */
+    /* ═══════════════════════════════ SECTION 2: PENCALONAN ═══════════════════════════════ */
     .pencalonan-card {
-      background: var(--white); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      background:var(--white); border:1px solid var(--border);
+      border-radius:var(--radius); padding:2rem; margin-bottom:1rem;
+      box-shadow:var(--shadow); position:relative; overflow:hidden;
+    }
+    .pencalonan-card::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:4px;
+      background:linear-gradient(90deg, var(--blue), var(--blue-light));
     }
     .pencalonan-card h4 {
-      font-weight: 700; font-size: 14px; color: var(--blue);
-      letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 1rem;
-      padding-bottom: 8px; border-bottom: 1px solid var(--border);
+      font-weight:700; font-size:13px; color:var(--blue);
+      letter-spacing:0.06em; text-transform:uppercase; margin-bottom:1.25rem;
+      padding-bottom:10px; border-bottom:1px solid var(--border);
     }
-    .form-row {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;
+
+    /* sub-section blocks */
+    .form-block {
+      background:linear-gradient(135deg,rgba(26,58,107,0.03),rgba(26,58,107,0.01));
+      border:1px solid rgba(26,58,107,0.1); border-radius:10px;
+      padding:1.25rem; margin-bottom:1.25rem;
+      transition:border-color 0.3s, box-shadow 0.3s;
     }
+    .form-block:hover { border-color:rgba(26,58,107,0.25); box-shadow:0 2px 12px rgba(26,58,107,0.06); }
+    .form-block-gold {
+      background:linear-gradient(135deg,rgba(184,134,11,0.04),rgba(184,134,11,0.01));
+      border-color:rgba(184,134,11,0.15);
+    }
+    .form-block-gold:hover { border-color:rgba(184,134,11,0.3); box-shadow:0 2px 12px rgba(184,134,11,0.08); }
+    .form-block-green {
+      background:linear-gradient(135deg,rgba(22,163,74,0.04),rgba(22,163,74,0.01));
+      border-color:rgba(22,163,74,0.15);
+    }
+    .form-block-green:hover { border-color:rgba(22,163,74,0.3); box-shadow:0 2px 12px rgba(22,163,74,0.08); }
+
+    .block-label {
+      display:flex; align-items:center; gap:8px; margin-bottom:1rem;
+    }
+    .block-icon {
+      width:30px; height:30px; border-radius:50%; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+      font-weight:800; font-size:13px; color:#fff;
+    }
+    .icon-blue  { background:linear-gradient(135deg,var(--blue-light),var(--blue)); }
+    .icon-gold  { background:linear-gradient(135deg,var(--gold-light),var(--gold)); }
+    .icon-green { background:linear-gradient(135deg,#4ade80,#16a34a); }
+    .block-label span { font-weight:700; font-size:14px; color:var(--text); }
+
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+    .form-row-single { margin-bottom:12px; }
     .form-group label {
-      display: block; font-size: 12px; font-weight: 600; color: var(--muted);
-      letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 5px;
+      display:block; font-size:11px; font-weight:700; color:var(--muted);
+      letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px;
     }
     .form-group input[type="text"] {
-      width: 100%; padding: 10px 14px;
-      border: 1.5px solid var(--border); border-radius: 8px;
-      font-family: 'DM Sans', sans-serif; font-size: 14px;
-      color: var(--text); background: var(--cream); outline: none;
-      transition: border-color 0.2s;
+      width:100%; padding:11px 14px;
+      border:1.5px solid var(--border); border-radius:9px;
+      font-family:'DM Sans',sans-serif; font-size:14px;
+      color:var(--text); background:#fafafa; outline:none;
+      transition:border-color 0.2s, box-shadow 0.2s, background 0.2s;
     }
-    .form-group input[type="text"]:focus { border-color: var(--blue); background: var(--white); }
-    .calon-num-badge {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 28px; height: 28px; background: var(--blue);
-      color: #fff; font-weight: 700; font-size: 13px; border-radius: 50%;
-      margin-right: 8px; flex-shrink: 0;
+    .form-group input[type="text"]:focus {
+      border-color:var(--blue); background:var(--white);
+      box-shadow:0 0 0 3px rgba(26,58,107,0.1);
     }
-    .calon-row-header {
-      display: flex; align-items: center; margin-bottom: 12px;
-    }
-    .calon-row-header span { font-weight: 600; font-size: 14px; color: var(--text); }
-    .btn-add {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 9px 18px; border: 1.5px dashed var(--blue-light);
-      border-radius: 8px; background: transparent; color: var(--blue);
-      font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
-      cursor: pointer; transition: background 0.2s; margin-top: 4px;
-    }
-    .btn-add:hover { background: rgba(46,95,170,0.06); }
+
     .btn-submit-form {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 11px 24px; background: var(--blue); color: #fff; border: none;
-      border-radius: 8px; font-family: 'DM Sans', sans-serif;
-      font-size: 14px; font-weight: 600; cursor: pointer;
-      transition: background 0.2s; margin-top: 1rem;
+      display:inline-flex; align-items:center; gap:8px;
+      padding:12px 28px;
+      background:linear-gradient(135deg, var(--blue-light), var(--blue));
+      color:#fff; border:none; border-radius:9px;
+      font-family:'DM Sans',sans-serif; font-size:14px; font-weight:700;
+      cursor:pointer; transition:all 0.25s; margin-top:1.25rem;
+      box-shadow:0 4px 14px rgba(26,58,107,0.3);
+      position:relative; overflow:hidden;
     }
-    .btn-submit-form:hover { background: var(--blue-light); }
-    .btn-submit-form:disabled { background: #94a3b8; cursor: not-allowed; }
-    .msg-success { background: #EAF7EE; border: 1px solid #A9DFBF; color: #1E6B3C; border-radius: 8px; padding: 10px 14px; font-size: 13px; margin-top: 10px; display: none; }
-    .msg-error   { background: #FDECEA; border: 1px solid #F5B7B1; color: var(--red);   border-radius: 8px; padding: 10px 14px; font-size: 13px; margin-top: 10px; display: none; }
+    .btn-submit-form::after {
+      content:''; position:absolute; inset:0;
+      background:rgba(255,255,255,0); transition:background 0.2s;
+    }
+    .btn-submit-form:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(26,58,107,0.4); }
+    .btn-submit-form:hover::after { background:rgba(255,255,255,0.08); }
+    .btn-submit-form:active { transform:translateY(0); }
+    .btn-submit-form:disabled { background:#94a3b8; box-shadow:none; cursor:not-allowed; transform:none; }
 
-    /* ── SECTION 3: ADUAN & USUL ── */
-    .au-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .msg-success {
+      display:none; background:linear-gradient(135deg,#d1fae5,#ecfdf5);
+      border:1px solid #6ee7b7; color:#065f46;
+      border-radius:9px; padding:12px 16px; font-size:13px; margin-top:12px;
+      animation: fadeUp 0.4s ease;
+    }
+    .msg-error {
+      display:none; background:linear-gradient(135deg,#fee2e2,#fef2f2);
+      border:1px solid #fca5a5; color:#991b1b;
+      border-radius:9px; padding:12px 16px; font-size:13px; margin-top:12px;
+      animation: fadeUp 0.4s ease;
+    }
+
+    /* spinner */
+    .spinner { width:16px; height:16px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.7s linear infinite; display:none; }
+
+    /* ═══════════════════════════════ SECTION 3: ADUAN & USUL ═══════════════════════════════ */
+    .au-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; }
     .au-card {
-      background: var(--white); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 1.5rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      background:var(--white); border:1px solid var(--border);
+      border-radius:var(--radius); padding:1.75rem;
+      box-shadow:var(--shadow); position:relative; overflow:hidden;
+      transition:transform 0.3s, box-shadow 0.3s;
     }
+    .au-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-hover); }
+    .au-card::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:4px;
+    }
+    .au-card.aduan-card::before { background:linear-gradient(90deg,#ef4444,#f97316); }
+    .au-card.usul-card::before  { background:linear-gradient(90deg,var(--gold),var(--gold-light)); }
     .au-card h4 {
-      font-weight: 700; font-size: 14px; color: var(--text);
-      text-transform: uppercase; letter-spacing: 0.04em;
-      margin-bottom: 1rem; padding-bottom: 8px; border-bottom: 1px solid var(--border);
+      font-weight:800; font-size:15px; color:var(--text);
+      letter-spacing:0.02em; margin-bottom:1.25rem;
+      padding-bottom:10px; border-bottom:1px solid var(--border);
+      display:flex; align-items:center; gap:8px;
     }
+    .au-card .form-group { margin-bottom:10px; }
     .au-card textarea {
-      width: 100%; padding: 10px 14px; min-height: 120px;
-      border: 1.5px solid var(--border); border-radius: 8px;
-      font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text);
-      background: var(--cream); resize: vertical; outline: none;
-      transition: border-color 0.2s;
+      width:100%; padding:11px 14px; min-height:130px;
+      border:1.5px solid var(--border); border-radius:9px;
+      font-family:'DM Sans',sans-serif; font-size:14px; color:var(--text);
+      background:#fafafa; resize:vertical; outline:none;
+      transition:border-color 0.2s, box-shadow 0.2s, background 0.2s;
     }
-    .au-card textarea:focus { border-color: var(--blue); background: var(--white); }
-    .au-card .form-group { margin-bottom: 10px; }
+    .au-card textarea:focus {
+      border-color:var(--blue); background:var(--white);
+      box-shadow:0 0 0 3px rgba(26,58,107,0.1);
+    }
+    .au-card input[type="text"] {
+      width:100%; padding:11px 14px;
+      border:1.5px solid var(--border); border-radius:9px;
+      font-family:'DM Sans',sans-serif; font-size:14px;
+      color:var(--text); background:#fafafa; outline:none;
+      transition:border-color 0.2s, box-shadow 0.2s, background 0.2s;
+      margin-bottom:0;
+    }
+    .au-card input[type="text"]:focus {
+      border-color:var(--blue); background:var(--white);
+      box-shadow:0 0 0 3px rgba(26,58,107,0.1);
+    }
+    .au-card label {
+      display:block; font-size:11px; font-weight:700; color:var(--muted);
+      letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px;
+    }
 
-    /* ── SECTION 4: DISCLAIMER ── */
+    /* ═══════════════════════════════ SECTION 4: DISCLAIMER ═══════════════════════════════ */
     .disclaimer {
-      background: #fffbeb; border: 1px solid #fcd34d;
-      border-radius: var(--radius); padding: 1.25rem 1.5rem;
+      background:linear-gradient(135deg,#fffbeb,#fef9e7);
+      border:1px solid #fcd34d; border-radius:var(--radius);
+      padding:1.5rem; position:relative; overflow:hidden;
     }
-    .disclaimer h4 { font-size: 13px; font-weight: 700; color: #92400e; margin-bottom: 8px; letter-spacing: 0.05em; text-transform: uppercase; }
-    .disclaimer ul { margin-left: 1.25rem; }
-    .disclaimer ul li { font-size: 13px; color: #78350f; padding: 3px 0; line-height: 1.6; }
-
-    /* ── SPINNER ── */
-    .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ── LOADING OVERLAY ── */
-    #global-loading {
-      position: fixed; inset: 0; background: rgba(255,255,255,0.85);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 200; display: none;
+    .disclaimer::before {
+      content:'⚠'; position:absolute; right:1.5rem; top:50%;
+      transform:translateY(-50%);
+      font-size:5rem; opacity:0.04; pointer-events:none;
     }
-    .loading-box { text-align: center; }
-    .big-spinner { width: 40px; height: 40px; border: 3px solid rgba(26,58,107,0.15); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 10px; }
-    #global-loading p { font-size: 14px; color: var(--muted); }
+    .disclaimer h4 {
+      font-size:13px; font-weight:800; color:#92400e;
+      margin-bottom:12px; letter-spacing:0.06em; text-transform:uppercase;
+      display:flex; align-items:center; gap:8px;
+    }
+    .disclaimer ul { margin-left:1.25rem; }
+    .disclaimer ul li {
+      font-size:13px; color:#78350f; padding:4px 0; line-height:1.7;
+      transition:color 0.2s;
+    }
+    .disclaimer ul li:hover { color:#451a03; }
 
-    @media (max-width: 600px) {
-      .form-row { grid-template-columns: 1fr; }
-      .au-grid  { grid-template-columns: 1fr; }
-      .gugur-grid { grid-template-columns: repeat(2, 1fr); }
+    /* ═══════════════════════════════ MISC ═══════════════════════════════ */
+    @media(max-width:600px) {
+      .form-row { grid-template-columns:1fr; }
+      .au-grid  { grid-template-columns:1fr; }
+      .gugur-grid { grid-template-columns:repeat(2,1fr); }
     }
   </style>
 </head>
 <body>
 
-<!-- GLOBAL LOADING -->
-<div id="global-loading">
-  <div class="loading-box">
-    <div class="big-spinner"></div>
-    <p>Menghantar data...</p>
-  </div>
-</div>
-
-<!-- HEADER -->
+<!-- ══════════════════ HEADER ══════════════════ -->
 <header>
   <div class="header-inner">
     <div class="logo-wrap">
-      <img src="data:image/png;base64,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IiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIpVXEL9VhZVvWYGne2OVzR8Co8j3yPL5Hue873OOZK+URfbk7kRERfEXrSWuDgciDmCvERF1TBbzMQw2G00jNzcnjg4bwpi5ro5jMuE2TsMld/+oz9RzXQcPvVb8AmqzNkb2gbx3jsUWraN0DyQOyr3y1mGHFKdrXOtKBvHPqOYPyUlERYSk6Ki6fX2z346cbs21wS/L2j9AtvpHpLBTjdXpPbLZOzWG1rPqeSob3Oe8ve4uc45kneSt1hlG4O968dyrLO+YoXxGgp3XJPaI0FuHffXlovERFvFVyIiIik1cQv1GFlW9Zgad7Y5XNB8CsEsj5XmSR7nvO9zjmSvlEX25O5EREXxERERERERERERERERERERERERERERERERERERERERERERERERFkgmmgkEkMr43jc5rsisaIRfVfWuLTdpsVuoNJ8aiZqi014/fjaT45KJexjE7oLbFyRzTva3qjwCgIuoQRg3DR5LNkxStkZsPmcRyLjb1RERdqwURERERERERERERERERERERERERERERERERevILyWt1QTsGe5eIiIiIiKbT6GOhPYkqxTubLGxokLgACHk+iR7IUJS4v2PZ/mIv6ZERe+WV/9qp/ml/7qITmSQAOQ7F4iIs9aeOIOElOCfPcZC8ZflcFkfbgcwtGGVGkjIODpcxz2vURERERERERERFLZbgaxrThlR5AyLi6XM89j8lEREUmezDJGWMoVoSfXY6QkeLiPgsdeRkTy59eOcZZashcB39UgrEiIpnllf/aqf5pf+6iyODnuc1jWAnMNbnkOW3avlERZq0scRJkqwz57hIXDL8pCzeWV/wDaqf5pf+6hoiL7he2OUPfEyVo3seTkfAg/FSfLK/8AtVP80v8A3UNERS5LUDo3NbhtVhIyDmulzHMZvIURERFJr2IY49V9CvMc/Se6QH/i4Bffllf/AGqn+aX/ALqGiIstmVkrgY60UAA3RlxB/MSsSIiIiIiIiIiIiIiIiLLDJExpEldshz3lxHyRFiREREREREUuL9j2f5iL+mRRFLi/Y9n+Yi/pkRFERERERERERERERERERERERERERERERERERERERERERERERERERERF6N+7NZbsPk9yevnn0UjmZ8cjksKl4z+17v8AMSf1FEURERERERERERERERERS4v2PZ/mIv6ZFEWeOZopS13A9eRjwR+6HDL/AJfBEWBF9ZM9p35fuvlERF6Mu0kdwXuTPad+X7oi+UXpyz2bl7GGF4EjnNb2lrcz4ZhEXyikyMohmcdmy53B0DQPHXKjIiIi+sme07w+6IvlF6dXLYTn3IMs9pI7giLxF9ZM9p35fuvk79iIiL0ZdpI7gvcme078v3RF8overnvOXcvcme07w+6IvlEX1kz2neH3RF8oi+sme078v3RF8ovTl2EnvCDLMZkgduQRF4ikvZREebLFgv4GBoHjr/oo4yz27kReKXjP7Yu/zEn9RUbJntO/L9192pBNYfKNbN51iTvJO8+OaIsSIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIv/9k=" alt="KOIKMA Logo"/>
+      <img src="logo.png" alt="KOIKMA Logo"/>
       <div class="org-name">
         <h1>Koperasi Warga Institut Koperasi Malaysia</h1>
-        <p>KOIKMA — Institut Koperasi Malaysia</p>
+        <p>KOIKMA Berhad</p>
       </div>
     </div>
     <div class="doc-title">Notis Rasmi</div>
-    <h2>Mesyuarat Agung Tahunan</h2>
+    <h2>Mesyuarat Agung Tahunan 37</h2>
     <p class="sub">Agenda Pemilihan Ahli Lembaga Koperasi</p>
+    <div class="header-divider"></div>
   </div>
 </header>
 
-<!-- NAV -->
+<!-- ══════════════════ NAV ══════════════════ -->
 <nav class="nav-bar">
   <a href="#pengguguran">① Pengguguran ALK</a>
   <a href="#pencalonan">② Pencalonan Baru</a>
@@ -245,9 +406,9 @@
 
 <div class="container">
 
-  <!-- ════════════════════════════════════════ -->
-  <!-- SECTION 1: NOTIS PENGGUGURAN ALK        -->
-  <!-- ════════════════════════════════════════ -->
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- SECTION 1: NOTIS PENGGUGURAN                  -->
+  <!-- ══════════════════════════════════════════════ -->
   <section id="pengguguran">
     <div class="section-head">
       <div class="section-num num-red">1</div>
@@ -256,64 +417,59 @@
         <p>Ahli-ahli berikut telah digugurkan daripada Lembaga Koperasi mengikut Akta Koperasi 1993</p>
       </div>
     </div>
-
     <div class="gugur-grid">
-      <!-- ALK 1 -->
       <div class="gugur-card">
         <img class="gugur-photo" src="ALK1.jpg" alt="ALK 1"
-          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"/>
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
         <div class="gugur-photo-placeholder" style="display:none">👤</div>
         <div class="gugur-info">
-          <h4>Nama Ahli Lembaga 1</h4>
-          <p>Jawatan / Peranan</p>
+          <h4>Pn Norbiha Binti Kasmuri</h4>
+          <p>Setiusaha / Peranan</p>
           <span class="gugur-badge">DIGUGURKAN</span>
         </div>
       </div>
-      <!-- ALK 2 -->
       <div class="gugur-card">
         <img class="gugur-photo" src="ALK2.jpg" alt="ALK 2"
-          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"/>
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
         <div class="gugur-photo-placeholder" style="display:none">👤</div>
         <div class="gugur-info">
-          <h4>Nama Ahli Lembaga 2</h4>
-          <p>Jawatan / Peranan</p>
+          <h4>Pn Salwana Binti Ali</h4>
+          <p>Penolong Setiausaha / Peranan</p>
           <span class="gugur-badge">DIGUGURKAN</span>
         </div>
       </div>
-      <!-- ALK 3 -->
       <div class="gugur-card">
         <img class="gugur-photo" src="ALK3.jpg" alt="ALK 3"
-          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"/>
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
         <div class="gugur-photo-placeholder" style="display:none">👤</div>
         <div class="gugur-info">
-          <h4>Nama Ahli Lembaga 3</h4>
-          <p>Jawatan / Peranan</p>
+          <h4>Pn Julizah Binti Sabstu</h4>
+          <p>Penolong Bendahari/ Peranan</p>
           <span class="gugur-badge">DIGUGURKAN</span>
         </div>
       </div>
-      <!-- ALK 4 -->
       <div class="gugur-card">
         <img class="gugur-photo" src="ALK4.jpg" alt="ALK 4"
-          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"/>
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
         <div class="gugur-photo-placeholder" style="display:none">👤</div>
         <div class="gugur-info">
-          <h4>Nama Ahli Lembaga 4</h4>
-          <p>Jawatan / Peranan</p>
+          <h4>En Ju Shamsuddin Bin Safian</h4>
+          <p>Jawatankuasa Pertanian / Peranan</p>
           <span class="gugur-badge">DIGUGURKAN</span>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ════════════════════════════════════════ -->
-  <!-- SECTION 2: PENCALONAN BARU              -->
-  <!-- ════════════════════════════════════════ -->
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- SECTION 2: PENCALONAN BARU                    -->
+  <!-- ══════════════════════════════════════════════ -->
   <section id="pencalonan">
     <div class="section-head">
       <div class="section-num num-blue">2</div>
       <div>
         <h3>Pencalonan Ahli Lembaga Koperasi Baru</h3>
-        <p>Isikan maklumat calon, pencadang, dan penyokong. Semua medan bertanda * adalah wajib.</p>
+        <p>Isikan maklumat calon, pencadang, dan penyokong. Medan bertanda * adalah wajib.</p>
       </div>
     </div>
 
@@ -321,96 +477,57 @@
       <h4>📋 Borang Pencalonan</h4>
 
       <!-- CALON -->
-      <div style="margin-bottom: 1.25rem;">
-        <div class="calon-row-header">
-          <span class="calon-num-badge">C</span>
+      <div class="form-block">
+        <div class="block-label">
+          <div class="block-icon icon-blue">C</div>
           <span>Maklumat Calon</span>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label>Nama Penuh Calon *</label>
+            <label>Nama Penuh *</label>
             <input type="text" id="calon-nama" placeholder="Masukkan nama penuh"/>
           </div>
-          <div class="form-group">
-            <label>No. Kad Pengenalan *</label>
-            <input type="text" id="calon-ic" placeholder="Tanpa sempang" maxlength="12" inputmode="numeric"/>
-          </div>
-        </div>
-        <div class="form-row">
           <div class="form-group">
             <label>No. Ahli Koperasi</label>
             <input type="text" id="calon-no-ahli" placeholder="Cth: KOP/2024/001"/>
           </div>
-          <div class="form-group">
-            <label>No. Telefon</label>
-            <input type="text" id="calon-telefon" placeholder="Cth: 0123456789"/>
-          </div>
         </div>
       </div>
 
-      <hr style="border:none; border-top:1px solid var(--border); margin-bottom:1.25rem;"/>
-
       <!-- PENCADANG -->
-      <div style="margin-bottom:1.25rem;">
-        <div class="calon-row-header">
-          <span class="calon-num-badge" style="background:var(--gold)">P</span>
+      <div class="form-block form-block-gold">
+        <div class="block-label">
+          <div class="block-icon icon-gold">P</div>
           <span>Maklumat Pencadang</span>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label>Nama Pencadang *</label>
+            <label>Nama Penuh *</label>
             <input type="text" id="pencadang-nama" placeholder="Masukkan nama penuh"/>
           </div>
-          <div class="form-group">
-            <label>No. Kad Pengenalan *</label>
-            <input type="text" id="pencadang-ic" placeholder="Tanpa sempang" maxlength="12" inputmode="numeric"/>
-          </div>
-        </div>
-        <div class="form-row">
           <div class="form-group">
             <label>No. Ahli Koperasi</label>
             <input type="text" id="pencadang-no-ahli" placeholder="Cth: KOP/2024/001"/>
           </div>
-          <div class="form-group">
-            <label>No. Telefon</label>
-            <input type="text" id="pencadang-telefon" placeholder="Cth: 0123456789"/>
-          </div>
         </div>
       </div>
 
-      <hr style="border:none; border-top:1px solid var(--border); margin-bottom:1.25rem;"/>
-
       <!-- PENYOKONG -->
-      <div style="margin-bottom:1rem;">
-        <div class="calon-row-header">
-          <span class="calon-num-badge" style="background:#16a34a">S</span>
+      <div class="form-block form-block-green">
+        <div class="block-label">
+          <div class="block-icon icon-green">S</div>
           <span>Maklumat Penyokong</span>
         </div>
-        <div id="penyokong-container">
-          <div class="penyokong-entry" data-index="0">
-            <div class="form-row">
-              <div class="form-group">
-                <label>Nama Penyokong 1 *</label>
-                <input type="text" class="ps-nama" placeholder="Masukkan nama penuh"/>
-              </div>
-              <div class="form-group">
-                <label>No. Kad Pengenalan *</label>
-                <input type="text" class="ps-ic" placeholder="Tanpa sempang" maxlength="12" inputmode="numeric"/>
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>No. Ahli Koperasi</label>
-                <input type="text" class="ps-no-ahli" placeholder="Cth: KOP/2024/001"/>
-              </div>
-              <div class="form-group">
-                <label>No. Telefon</label>
-                <input type="text" class="ps-telefon" placeholder="Cth: 0123456789"/>
-              </div>
-            </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nama Penuh *</label>
+            <input type="text" id="penyokong-nama" placeholder="Masukkan nama penuh"/>
+          </div>
+          <div class="form-group">
+            <label>No. Ahli Koperasi</label>
+            <input type="text" id="penyokong-no-ahli" placeholder="Cth: KOP/2024/001"/>
           </div>
         </div>
-        <button class="btn-add" onclick="addPenyokong()">＋ Tambah Penyokong</button>
       </div>
 
       <div class="msg-success" id="pencalonan-success">✅ Pencalonan berjaya dihantar! Terima kasih.</div>
@@ -422,27 +539,27 @@
     </div>
   </section>
 
-  <!-- ════════════════════════════════════════ -->
-  <!-- SECTION 3: ADUAN & USUL                 -->
-  <!-- ════════════════════════════════════════ -->
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- SECTION 3: ADUAN & USUL                       -->
+  <!-- ══════════════════════════════════════════════ -->
   <section id="aduan-usul">
     <div class="section-head">
       <div class="section-num num-gold">3</div>
       <div>
-        <h3>Aduan & Usul</h3>
+        <h3>Aduan &amp; Usul</h3>
         <p>Kemukakan aduan atau usul anda untuk dibentangkan dalam Mesyuarat Agung.</p>
       </div>
     </div>
-
     <div class="au-grid">
+
       <!-- ADUAN -->
-      <div class="au-card">
+      <div class="au-card aduan-card">
         <h4>📣 Aduan</h4>
         <div class="form-group">
           <label>Nama *</label>
-          <input type="text" id="aduan-nama" placeholder="Nama penuh"/>
+          <input type="text" id="aduan-nama" placeholder="Nama penuh anda"/>
         </div>
-        <div class="form-group">
+        <div class="form-group" style="margin-bottom:10px;">
           <label>No. Ahli</label>
           <input type="text" id="aduan-no-ahli" placeholder="Cth: KOP/2024/001"/>
         </div>
@@ -452,20 +569,20 @@
         </div>
         <div class="msg-success" id="aduan-success">✅ Aduan berjaya dihantar.</div>
         <div class="msg-error"   id="aduan-error"></div>
-        <button class="btn-submit-form" id="aduan-btn" onclick="submitAduan()">
+        <button class="btn-submit-form" id="aduan-btn" onclick="submitAduan()" style="background:linear-gradient(135deg,#f97316,#ef4444);">
           <div class="spinner" id="aduan-spinner"></div>
           Hantar Aduan
         </button>
       </div>
 
       <!-- USUL -->
-      <div class="au-card">
+      <div class="au-card usul-card">
         <h4>💡 Usul</h4>
         <div class="form-group">
           <label>Nama *</label>
-          <input type="text" id="usul-nama" placeholder="Nama penuh"/>
+          <input type="text" id="usul-nama" placeholder="Nama penuh anda"/>
         </div>
-        <div class="form-group">
+        <div class="form-group" style="margin-bottom:10px;">
           <label>No. Ahli</label>
           <input type="text" id="usul-no-ahli" placeholder="Cth: KOP/2024/001"/>
         </div>
@@ -475,22 +592,24 @@
         </div>
         <div class="msg-success" id="usul-success">✅ Usul berjaya dihantar.</div>
         <div class="msg-error"   id="usul-error"></div>
-        <button class="btn-submit-form" id="usul-btn" onclick="submitUsul()">
-          <div class="spinner" id="usul-spinner"></div>
+        <button class="btn-submit-form" id="usul-btn" onclick="submitUsul()" style="background:linear-gradient(135deg,var(--gold-light),var(--gold));color:#1a1a1a;">
+          <div class="spinner" id="usul-spinner" style="border-color:rgba(0,0,0,0.2);border-top-color:#1a1a1a;"></div>
           Hantar Usul
         </button>
       </div>
+
     </div>
   </section>
 
-  <!-- ════════════════════════════════════════ -->
-  <!-- SECTION 4: DISCLAIMER                   -->
-  <!-- ════════════════════════════════════════ -->
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- SECTION 4: DISCLAIMER                         -->
+  <!-- ══════════════════════════════════════════════ -->
   <section id="disclaimer">
     <div class="section-head">
       <div class="section-num num-gray">4</div>
       <div>
         <h3>Penafian (Disclaimer)</h3>
+        <p>Sila baca sebelum menggunakan sistem ini</p>
       </div>
     </div>
     <div class="disclaimer">
@@ -507,17 +626,17 @@
     </div>
   </section>
 
-</div><!-- /container -->
+</div>
 
-<!-- Firebase SDK -->
+<!-- Firebase -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getFirestore, collection, addDoc, serverTimestamp }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  // ══════════════════════════════════════════════════
+  // ══════════════════════════════════════════════
   // 🔧 TAMPAL FIREBASE CONFIG ANDA DI SINI
-  // ══════════════════════════════════════════════════
+  // ══════════════════════════════════════════════
   const firebaseConfig = {
     apiKey:            "GANTI_DENGAN_API_KEY_ANDA",
     authDomain:        "GANTI_DENGAN_AUTH_DOMAIN",
@@ -526,179 +645,89 @@
     messagingSenderId: "GANTI_DENGAN_MESSAGING_SENDER_ID",
     appId:             "GANTI_DENGAN_APP_ID"
   };
-  // ══════════════════════════════════════════════════
+  // ══════════════════════════════════════════════
 
   let db;
   try {
     const app = initializeApp(firebaseConfig);
     db = getFirestore(app);
-    console.log("Firebase connected ✓");
-  } catch(e) {
-    console.error("Firebase init error:", e);
-  }
+  } catch(e) { console.error("Firebase error:", e); }
 
-  // ── HELPERS ────────────────────────────────────────
-  function showLoading(show) {
-    document.getElementById("global-loading").style.display = show ? "flex" : "none";
-  }
-  function showSpinner(id, show) {
-    document.getElementById(id).style.display = show ? "inline-block" : "none";
-  }
-  function showMsg(id, show) {
-    document.getElementById(id).style.display = show ? "block" : "none";
-  }
-  function setMsg(id, text) {
-    document.getElementById(id).textContent = text;
-  }
-  function val(id) { return document.getElementById(id).value.trim(); }
-  function clear(id) { document.getElementById(id).value = ""; }
+  function showSpinner(id, show) { document.getElementById(id).style.display = show ? "inline-block" : "none"; }
+  function showMsg(id, show)    { document.getElementById(id).style.display = show ? "block" : "none"; }
+  function setMsg(id, text)     { document.getElementById(id).textContent = text; }
+  function val(id)              { return document.getElementById(id).value.trim(); }
+  function clear(id)            { document.getElementById(id).value = ""; }
 
-  // ── PENYOKONG ────────────────────────────────────
-  let penyokongCount = 1;
-  window.addPenyokong = function() {
-    penyokongCount++;
-    const div = document.createElement("div");
-    div.className = "penyokong-entry";
-    div.setAttribute("data-index", penyokongCount - 1);
-    div.innerHTML = `
-      <div class="form-row" style="margin-top:8px;">
-        <div class="form-group">
-          <label>Nama Penyokong ${penyokongCount} *</label>
-          <input type="text" class="ps-nama" placeholder="Masukkan nama penuh"/>
-        </div>
-        <div class="form-group">
-          <label>No. Kad Pengenalan *</label>
-          <input type="text" class="ps-ic" placeholder="Tanpa sempang" maxlength="12" inputmode="numeric"/>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>No. Ahli Koperasi</label>
-          <input type="text" class="ps-no-ahli" placeholder="Cth: KOP/2024/001"/>
-        </div>
-        <div class="form-group">
-          <label>No. Telefon</label>
-          <input type="text" class="ps-telefon" placeholder="Cth: 0123456789"/>
-        </div>
-      </div>
-    `;
-    document.getElementById("penyokong-container").appendChild(div);
-  };
-
-  // ── SUBMIT PENCALONAN ─────────────────────────────
+  // ── SUBMIT PENCALONAN ──────────────────────────
   window.submitPencalonan = async function() {
-    showMsg("pencalonan-success", false);
-    showMsg("pencalonan-error", false);
-
-    const calonNama = val("calon-nama");
-    const calonIC   = val("calon-ic");
+    showMsg("pencalonan-success", false); showMsg("pencalonan-error", false);
+    const calonNama    = val("calon-nama");
     const pencadangNama = val("pencadang-nama");
-    const pencadangIC   = val("pencadang-ic");
-
-    if (!calonNama || !calonIC) {
-      setMsg("pencalonan-error", "Sila isi nama dan IC calon.");
-      showMsg("pencalonan-error", true); return;
-    }
-    if (!pencadangNama || !pencadangIC) {
-      setMsg("pencalonan-error", "Sila isi nama dan IC pencadang.");
-      showMsg("pencalonan-error", true); return;
-    }
-    if (!/^\d{12}$/.test(calonIC.replace(/-/g,""))) {
-      setMsg("pencalonan-error", "IC calon tidak sah — perlu 12 digit.");
-      showMsg("pencalonan-error", true); return;
-    }
-
-    // Collect penyokong
-    const penyokong = [];
-    document.querySelectorAll(".penyokong-entry").forEach((entry, i) => {
-      const nama = entry.querySelector(".ps-nama").value.trim();
-      const ic   = entry.querySelector(".ps-ic").value.trim();
-      const noAhli = entry.querySelector(".ps-no-ahli").value.trim();
-      const tel    = entry.querySelector(".ps-telefon").value.trim();
-      if (nama) penyokong.push({ nama, ic, noAhli, tel });
-    });
-
+    const penyokongNama = val("penyokong-nama");
+    if (!calonNama)    { setMsg("pencalonan-error","Sila isi nama calon."); showMsg("pencalonan-error",true); return; }
+    if (!pencadangNama){ setMsg("pencalonan-error","Sila isi nama pencadang."); showMsg("pencalonan-error",true); return; }
+    if (!penyokongNama){ setMsg("pencalonan-error","Sila isi nama penyokong."); showMsg("pencalonan-error",true); return; }
     const btn = document.getElementById("pencalonan-btn");
-    btn.disabled = true;
-    showSpinner("pencalonan-spinner", true);
-
+    btn.disabled = true; showSpinner("pencalonan-spinner", true);
     try {
       await addDoc(collection(db, "pencalonan"), {
-        calon: {
-          nama: calonNama, ic: calonIC,
-          noAhli: val("calon-no-ahli"), telefon: val("calon-telefon")
-        },
-        pencadang: {
-          nama: pencadangNama, ic: pencadangIC,
-          noAhli: val("pencadang-no-ahli"), telefon: val("pencadang-telefon")
-        },
-        penyokong,
+        calon:     { nama: calonNama,    noAhli: val("calon-no-ahli") },
+        pencadang: { nama: pencadangNama, noAhli: val("pencadang-no-ahli") },
+        penyokong: { nama: penyokongNama, noAhli: val("penyokong-no-ahli") },
         dihantar: serverTimestamp()
       });
       showMsg("pencalonan-success", true);
-      // Clear form
-      ["calon-nama","calon-ic","calon-no-ahli","calon-telefon",
-       "pencadang-nama","pencadang-ic","pencadang-no-ahli","pencadang-telefon"]
-        .forEach(clear);
-      document.getElementById("penyokong-container").querySelectorAll("input").forEach(i => i.value = "");
-    } catch(e) {
-      setMsg("pencalonan-error", "Ralat menghantar. Sila cuba semula.");
-      showMsg("pencalonan-error", true);
-      console.error(e);
-    }
-    btn.disabled = false;
-    showSpinner("pencalonan-spinner", false);
+      ["calon-nama","calon-no-ahli","pencadang-nama","pencadang-no-ahli","penyokong-nama","penyokong-no-ahli"].forEach(clear);
+    } catch(e) { setMsg("pencalonan-error","Ralat menghantar. Sila cuba semula."); showMsg("pencalonan-error",true); console.error(e); }
+    btn.disabled = false; showSpinner("pencalonan-spinner", false);
   };
 
-  // ── SUBMIT ADUAN ──────────────────────────────────
+  // ── SUBMIT ADUAN ───────────────────────────────
   window.submitAduan = async function() {
-    showMsg("aduan-success", false);
-    showMsg("aduan-error", false);
-    const nama = val("aduan-nama");
-    const kandungan = val("aduan-kandungan");
-    if (!nama || !kandungan) {
-      setMsg("aduan-error", "Sila isi nama dan kandungan aduan.");
-      showMsg("aduan-error", true); return;
-    }
+    showMsg("aduan-success",false); showMsg("aduan-error",false);
+    const nama = val("aduan-nama"); const kandungan = val("aduan-kandungan");
+    if (!nama||!kandungan) { setMsg("aduan-error","Sila isi nama dan kandungan aduan."); showMsg("aduan-error",true); return; }
     const btn = document.getElementById("aduan-btn");
-    btn.disabled = true; showSpinner("aduan-spinner", true);
+    btn.disabled = true; showSpinner("aduan-spinner",true);
     try {
-      await addDoc(collection(db, "aduan"), {
-        nama, noAhli: val("aduan-no-ahli"), kandungan, dihantar: serverTimestamp()
-      });
-      showMsg("aduan-success", true);
+      await addDoc(collection(db,"aduan"), { nama, noAhli: val("aduan-no-ahli"), kandungan, dihantar: serverTimestamp() });
+      showMsg("aduan-success",true);
       clear("aduan-nama"); clear("aduan-no-ahli"); clear("aduan-kandungan");
-    } catch(e) {
-      setMsg("aduan-error", "Ralat menghantar. Sila cuba semula.");
-      showMsg("aduan-error", true); console.error(e);
-    }
-    btn.disabled = false; showSpinner("aduan-spinner", false);
+    } catch(e) { setMsg("aduan-error","Ralat menghantar. Sila cuba semula."); showMsg("aduan-error",true); console.error(e); }
+    btn.disabled = false; showSpinner("aduan-spinner",false);
   };
 
-  // ── SUBMIT USUL ───────────────────────────────────
+  // ── SUBMIT USUL ────────────────────────────────
   window.submitUsul = async function() {
-    showMsg("usul-success", false);
-    showMsg("usul-error", false);
-    const nama = val("usul-nama");
-    const kandungan = val("usul-kandungan");
-    if (!nama || !kandungan) {
-      setMsg("usul-error", "Sila isi nama dan kandungan usul.");
-      showMsg("usul-error", true); return;
-    }
+    showMsg("usul-success",false); showMsg("usul-error",false);
+    const nama = val("usul-nama"); const kandungan = val("usul-kandungan");
+    if (!nama||!kandungan) { setMsg("usul-error","Sila isi nama dan kandungan usul."); showMsg("usul-error",true); return; }
     const btn = document.getElementById("usul-btn");
-    btn.disabled = true; showSpinner("usul-spinner", true);
+    btn.disabled = true; showSpinner("usul-spinner",true);
     try {
-      await addDoc(collection(db, "usul"), {
-        nama, noAhli: val("usul-no-ahli"), kandungan, dihantar: serverTimestamp()
-      });
-      showMsg("usul-success", true);
+      await addDoc(collection(db,"usul"), { nama, noAhli: val("usul-no-ahli"), kandungan, dihantar: serverTimestamp() });
+      showMsg("usul-success",true);
       clear("usul-nama"); clear("usul-no-ahli"); clear("usul-kandungan");
-    } catch(e) {
-      setMsg("usul-error", "Ralat menghantar. Sila cuba semula.");
-      showMsg("usul-error", true); console.error(e);
-    }
-    btn.disabled = false; showSpinner("usul-spinner", false);
+    } catch(e) { setMsg("usul-error","Ralat menghantar. Sila cuba semula."); showMsg("usul-error",true); console.error(e); }
+    btn.disabled = false; showSpinner("usul-spinner",false);
   };
+
+  // ── SCROLL ANIMATIONS ─────────────────────────
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('section').forEach(s => {
+    s.style.opacity = '0';
+    s.style.transform = 'translateY(30px)';
+    s.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    observer.observe(s);
+  });
 </script>
 </body>
 </html>
